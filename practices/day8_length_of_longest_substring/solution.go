@@ -1,27 +1,21 @@
 package day8_length_of_longest_substring
 
 func LengthOfLongestSubstring(s string) int {
-	result := 0
-	length := 0
-	runes := []rune(s)
+	if len(s) == 0 {
+		return 0
+	}
 
-	store := make(map[rune]int)
+	left, maxLength := 0, 1
+	store := make(map[byte]int)
 
-	for i, item := range runes {
-		length = result
-		if _, ok := store[item]; ok {
-			if length > result {
-				result = length
-			}
-		} else {
-			store[item] = i
-			length += 1
+	for right := 0; right < len(s); right++ {
+		if idx, ok := store[s[right]]; ok && idx >= left {
+			left = idx + 1
 		}
+		store[s[right]] = right
+		maxLength = max(maxLength, right-left+1)
+
 	}
 
-	if length > result {
-		result = length
-	}
-
-	return result
+	return maxLength
 }

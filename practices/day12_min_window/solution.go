@@ -1,32 +1,38 @@
 package day12_min_window
 
 func minWindow(s string, t string) string {
-	if len(s) < len(t) {
-		return ""
+	window := make(map[byte]int, 0)
+	need := make(map[byte]int, 0)
+
+	left, match := -1, 0
+	start, end, minLen := 0, 0, len(s)+1
+
+	for i := range t {
+		need[t[i]]++
 	}
 
-	left := 0
-	resLeft := 0
-	resRight := 0
-	storeT := [128]int{}
-	storeS := [128]int{}
+	for right := 0; right < len(s); right++ {
+		ch1 := s[right]
+		window[ch1]++
 
-	for i := 0; i < len(t); i++ {
-		storeT[t[i]]++
-	}
+		if window[ch1] == need[ch1] {
+			match++
+		}
 
-	for i := len(t) - 1; i >= 0; i-- {
-		storeS[t[i]]++
-		if storeS == storeT {
-			if (resLeft == 0 && resRight == 0) || (i-left < resRight-resLeft) {
-				resLeft = left
-				resRight = i
+		for match == len(need) {
+			if right-left < minLen {
+				start, end = left, right
+				minLen = right - left
 			}
 
-			storeS[left]--
 			left++
+			ch2 := s[left]
+			if window[ch2] == need[ch2] {
+				match--
+			}
+			window[ch2]--
 		}
 	}
 
-	return s[resLeft : resRight+1]
+	return s[start+1 : end+1]
 }
